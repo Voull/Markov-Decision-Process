@@ -1,4 +1,4 @@
-#no bugs
+#no bugs HAHAHAHAH
 from typing import List
 
 # states = []
@@ -22,19 +22,29 @@ class Acao:
     def novaTransicao(self, transicao: Transicao) -> None:
         self.transicoes.append(transicao)
 
+    def getTransicoes(self) -> List[Transicao]:
+        return self.transicoes
+
 class Custo:
     estadoAtual = ""
     acao = ""
     valorCusto = 0.0
 
+class Estado:
+    def __init__(self, estado: str = "", valorBellman: float = 0.0):
+        self.estado = estado
+        self.valorBellman = valorBellman
+
 
 class Problema:
-    def __init__(self, estados: List[str]=[], acoes: List[Acao]=[], custos: List[Custo]=[], estadoInicial: str="", estadoObjetivo: str=""):
+    def __init__(self, estados: List[Estado]=[], acoes: List[Acao]=[], custos: List[Custo]=[], estadoInicial: str="", estadoObjetivo: str=""):
         self.estados = estados
         self.acoes = acoes
         self.custos = custos
         self.estadoInicial = estadoInicial
         self.estadoObjetivo = estadoObjetivo
+
+
 
 
 def gerarTransicao(line: str) -> Transicao:
@@ -89,7 +99,9 @@ def parse_file(path: str) -> Problema:
                 if current_block == "action":
                     actions.append(Acao(line[1]))
             elif current_block == "states":
-                states = line.split(", ")
+                states = []
+                for state in line.split(", "):
+                    states.append(Estado(state))
             elif current_block == "action":
                 actions[-1].novaTransicao(gerarTransicao(line))
             elif current_block == "cost":
