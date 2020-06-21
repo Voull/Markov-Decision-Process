@@ -15,7 +15,7 @@ class Transition:
     discard = 0.0
 
 class Action:
-    def __init__(self, action_name: str= "", transitions: List[Transition]=[]):
+    def __init__(self, action_name: str = "", transitions: List[Transition] = []):
         self.name = action_name
         self.transitions = transitions
 
