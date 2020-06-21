@@ -8,72 +8,68 @@ from typing import List
 # goalState = ""
 
 
-class Transicao:
-    estadoInit = ""
-    estadoSuc = ""
-    probabilidade = 0.0
-    descartar = 0.0
+class Transition:
+    current_state = ""
+    successor_state = ""
+    probability = 0.0
+    discard = 0.0
 
-class Acao:
-    def __init__(self, nomeAcao: str="", transicoes: List[Transicao]=[]):
-        self.nome = nomeAcao
-        self.transicoes = transicoes
+class Action:
+    def __init__(self, action_name: str= "", transitions: List[Transition]=[]):
+        self.name = action_name
+        self.transitions = transitions
 
-    def novaTransicao(self, transicao: Transicao) -> None:
-        self.transicoes.append(transicao)
+    def insertTransition(self, transition: Transition) -> None:
+        self.transitions.append(transition)
 
-    def getTransicoes(self) -> List[Transicao]:
-        return self.transicoes
+    def getTransition(self) -> List[Transition]:
+        return self.transitions
 
-class Custo:
-    estadoAtual = ""
-    acao = ""
-    valorCusto = 0.0
+class Cost:
+    current_state = ""
+    action = ""
+    cost_value = 0.0
 
-class Estado:
-    def __init__(self, estado: str = "", valorBellman: float = 0.0):
-        self.estado = estado
-        self.valorBellman = valorBellman
+class State:
+    def __init__(self, name: str = "", bellman_value: float = 0.0):
+        self.state = name
+        self.bellman_value = bellman_value
 
+class Problem:
+    def __init__(self, states: List[State]=[], actions: List[Action]=[], costs: List[Cost]=[], initial_state: str= "", goal_state: str= ""):
+        self.state = states
+        self.actions = actions
+        self.costs = costs
+        self.initial_state = initial_state
+        self.goal_state = goal_state
 
-class Problema:
-    def __init__(self, estados: List[Estado]=[], acoes: List[Acao]=[], custos: List[Custo]=[], estadoInicial: str="", estadoObjetivo: str=""):
-        self.estados = estados
-        self.acoes = acoes
-        self.custos = custos
-        self.estadoInicial = estadoInicial
-        self.estadoObjetivo = estadoObjetivo
-
-
-
-
-def gerarTransicao(line: str) -> Transicao:
+def createTransition(line: str) -> Transition:
     line = line.split(" ")
-    transicao = Transicao()
-    transicao.estadoInit = line[0]
-    transicao.estadoSuc = line[1]
-    transicao.probabilidade = line[2]
-    transicao.descartar = line[3]
+    transition = Transition()
+    transition.current_state = line[0]
+    transition.successor_state = line[1]
+    transition.probability = line[2]
+    transition.discard = line[3]
 
-    return transicao
+    return transition
 
 
-def gerarCusto(line: str) -> Custo:
+def createCost(line: str) -> Cost:
     line = line.split(" ")
-    custo = Custo()
-    custo.estadoAtual = line[0]
-    custo.acao = line[1]
-    custo.valorCusto = line[2]
+    cost = Cost()
+    cost.current_state = line[0]
+    cost.action = line[1]
+    cost.cost_value = line[2]
 
-    return custo
-
-
-def gerarProblema(estados: List[str], acoes: List[Acao], custos: List[Custo], estadoInicial: str, estadoObjetivo: str) -> Problema:
-
-    return Problema(estados, acoes, custos, estadoInicial, estadoObjetivo)
+    return cost
 
 
-def parse_file(path: str) -> Problema:
+def createProblem(estados: List[str], acoes: List[Action], custos: List[Cost], estadoInicial: str, estadoObjetivo: str) -> Problem:
+
+    return Problem(estados, acoes, custos, estadoInicial, estadoObjetivo)
+
+
+def parse_file(path: str) -> Problem:
     # nonlocal states
     # nonlocal costs
     # nonlocal initialState
@@ -97,21 +93,21 @@ def parse_file(path: str) -> Problema:
                 line = line.split(" ")
                 current_block = line[0]
                 if current_block == "action":
-                    actions.append(Acao(line[1]))
+                    actions.append(Action(line[1]))
             elif current_block == "states":
                 states = []
                 for state in line.split(", "):
-                    states.append(Estado(state))
+                    states.append(State(state))
             elif current_block == "action":
-                actions[-1].novaTransicao(gerarTransicao(line))
+                actions[-1].insertTransition(createTransition(line))
             elif current_block == "cost":
-                costs.append(gerarCusto(line))
+                costs.append(createCost(line))
             elif current_block == "initialstate":
                 initialState = line
             elif current_block == "goalstate":
                 goalState = line
 
-    return gerarProblema(states, actions, costs, initialState, goalState)
+    return createProblem(states, actions, costs, initialState, goalState)
 
 # parse_file("TestesGrid/FixedGoalInitialState/navigation_1.net")
 # print("Finish")
