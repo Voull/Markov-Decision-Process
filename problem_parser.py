@@ -28,7 +28,7 @@ class Action:
 class Cost:
     current_state = ""
     action = ""
-    cost_value = 0.0
+    value = 0.0
 
 class State:
     def __init__(self, name: str = "", bellman_value: float = 0.0):
@@ -59,7 +59,7 @@ def createCost(line: str) -> Cost:
     cost = Cost()
     cost.current_state = line[0]
     cost.action = line[1]
-    cost.cost_value = line[2]
+    cost.value = line[2]
 
     return cost
 
