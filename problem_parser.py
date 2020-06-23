@@ -15,9 +15,9 @@ class Transition:
     discard = 0.0
 
 class Action:
-    def __init__(self, action_name: str = "", transitions: List[Transition] = []):
+    def __init__(self, action_name: str = "", transitions: List[Transition] = None):
         self.name = action_name
-        self.transitions = transitions
+        self.transitions = [] if transitions is None else transitions
 
     def insertTransition(self, transition: Transition) -> None:
         self.transitions.append(transition)
@@ -32,14 +32,14 @@ class Cost:
 
 class State:
     def __init__(self, name: str = "", bellman_value: float = 0.0):
-        self.state = name
+        self.name = name
         self.bellman_value = bellman_value
 
 class Problem:
-    def __init__(self, states: List[State]=[], actions: List[Action]=[], costs: List[Cost]=[], initial_state: str= "", goal_state: str= ""):
-        self.state = states
-        self.actions = actions
-        self.costs = costs
+    def __init__(self, states: List[State]= None, actions: List[Action]=None, costs: List[Cost]=None, initial_state: str= "", goal_state: str= ""):
+        self.states = [] if states is None else states
+        self.actions = [] if actions is None else actions
+        self.costs = [] if costs is None else costs
         self.initial_state = initial_state
         self.goal_state = goal_state
 
@@ -48,8 +48,8 @@ def createTransition(line: str) -> Transition:
     transition = Transition()
     transition.current_state = line[0]
     transition.successor_state = line[1]
-    transition.probability = line[2]
-    transition.discard = line[3]
+    transition.probability = float(line[2])
+    transition.discard = float(line[3])
 
     return transition
 
@@ -59,12 +59,12 @@ def createCost(line: str) -> Cost:
     cost = Cost()
     cost.current_state = line[0]
     cost.action = line[1]
-    cost.value = line[2]
+    cost.value = float(line[2])
 
     return cost
 
 
-def createProblem(estados: List[str], acoes: List[Action], custos: List[Cost], estadoInicial: str, estadoObjetivo: str) -> Problem:
+def createProblem(estados: List[State], acoes: List[Action], custos: List[Cost], estadoInicial: str, estadoObjetivo: str) -> Problem:
 
     return Problem(estados, acoes, custos, estadoInicial, estadoObjetivo)
 

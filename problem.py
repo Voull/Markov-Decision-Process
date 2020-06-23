@@ -1,21 +1,32 @@
 # no bug
 import problem_parser
-EPSLON = 0.01
+EPSILON = 0.01
 
 def value_iteration(problem: problem_parser.Problem):
     n = 0
-    while residual() < EPSLON:
+    while True:
         n = n + 1
-        for state in problem.state:
-            compute_bellman(state, problem)
-            residual()
+        max_residual = 0.0
+        for state in problem.states:
+            new_value = compute_bellman(state, problem)
+            max_residual = max(residual(state.bellman_value, new_value), max_residual)
+            state.bellman_value = new_value
+        if max_residual < EPSILON:
+            break
+    # TODO: Find Policy
+    return problem
 
 # Returns the Bellman Value of a State
 def compute_bellman(state, problem):
+    if state.name == problem.goal_state:
+        return 0
     value = float('inf')
     possible_actions = find_actions(state, problem.actions)
     for action in possible_actions:
-        find_cost(state, action, problem.costs)
+        new_value = find_cost(state, action, problem.costs)
+        for transition in action.transitions:
+            new_value += transition.probability * get_state_value(transition.successor_state, problem.states)
+        value = min(value, new_value)
     # aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa to gotando, di pogama contigu :O:0<3 Eu goto de ver vc fiiz pogamando :3 hihiihihii e eu goto de te ve fiiz fofaaaaa dmssssaaaaaaaaa
     return value
 
@@ -28,6 +39,8 @@ def find_actions(state, action_list):
     return possible_actions
 
 # Lockdowned - Num mexe mais, ta limpu
+# ~76% cummulative execution time (including function calls)
+# ~40% internal execution time
 def find_transitions(action,state):
     possible_transitions = []
     for transition in action.transitions:
@@ -35,16 +48,19 @@ def find_transitions(action,state):
             possible_transitions.append(transition)
     return possible_transitions ##LockD
 
+# 94 million function calls! - ~36% execution time
+# If removed, there's a ~52% time improvement
 def is_valid_transition(transition, state):
     return transition.current_state == state.name and \
-           not (state.name != transition.successor_state or transition.probability != 1.0)
+           (state.name != transition.successor_state or transition.probability != 1.0)
+
 # A and ¬B or A and ¬C equivale a A and ¬(B or C)
 
 def find_cost(state, action, cost_list) -> float:
     for cost in cost_list:
         if cost.current_state == state.name and cost.action == action.name:
             return cost.value
-    return 0.0
+    return float("inf")
 
 def get_state_value(state_name, state_list):
     for state in state_list:
