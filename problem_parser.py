@@ -34,6 +34,7 @@ class State:
     def __init__(self, name: str = "", bellman_value: float = 0.0):
         self.name = name
         self.bellman_value = bellman_value
+        self.policy_action = ""
 
 class Problem:
     def __init__(self, states: List[State]= None, actions: List[Action]=None, costs: List[Cost]=None, initial_state: str= "", goal_state: str= ""):

@@ -1,9 +1,10 @@
 # no bug
 import problem_parser
-EPSILON = 0.01
+EPSILON = 0.1
 
 def value_iteration(problem: problem_parser.Problem):
     n = 0
+
     while True:
         n = n + 1
         max_residual = 0.0
@@ -13,7 +14,9 @@ def value_iteration(problem: problem_parser.Problem):
             state.bellman_value = new_value
         if max_residual < EPSILON:
             break
-    # TODO: Find Policy
+    print("Number of iterations: {:d}".format(n))
+    print("Residual: {:f}".format(max_residual))
+    #print("Time spent: {:f}".format())
     return problem
 
 # Returns the Bellman Value of a State
@@ -21,19 +24,24 @@ def compute_bellman(state, problem):
     if state.name == problem.goal_state:
         return 0
     value = float('inf')
+    policy_action = ""
     possible_actions = find_actions(state, problem.actions)
     for action in possible_actions:
         new_value = find_cost(state, action, problem.costs)
         for transition in action.transitions:
             new_value += transition.probability * get_state_value(transition.successor_state, problem.states)
-        value = min(value, new_value)
+        if new_value < value:
+            value = new_value
+            policy_action = action.name
+        #value = min(value, new_value)
     # aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa to gotando, di pogama contigu :O:0<3 Eu goto de ver vc fiiz pogamando :3 hihiihihii e eu goto de te ve fiiz fofaaaaa dmssssaaaaaaaaa
+    state.policy_action = policy_action
     return value
 
 def find_actions(state, action_list):
     possible_actions = []
     for action in action_list:
-        possible_transitions = find_transitions(action,state)
+        possible_transitions = find_transitions(action, state)
         if len(possible_transitions) > 0:
             possible_actions.append(problem_parser.Action(action.name, possible_transitions))
     return possible_actions
@@ -44,7 +52,9 @@ def find_actions(state, action_list):
 def find_transitions(action,state):
     possible_transitions = []
     for transition in action.transitions:
-        if is_valid_transition(transition, state):
+        #if is_valid_transition(transition, state):
+        if transition.current_state == state.name and \
+           (state.name != transition.successor_state or transition.probability != 1.0):
             possible_transitions.append(transition)
     return possible_transitions ##LockD
 
