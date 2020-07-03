@@ -113,7 +113,15 @@ def make_grid(states,start,end):
         if end == state.name:
             grid[linha][coluna] += " goal"
 
+    smooth_grid(grid)
+
     return grid[::-1]
+
+def smooth_grid(grid):
+    max_columns = len(max(grid, key=lambda o: len(o)))
+    for line in grid:
+        for missing_column in range(max_columns - 1):
+            line.append("")
 
 def prep_list(grid, line, column):
     while line >= len(grid):

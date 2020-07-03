@@ -65,9 +65,12 @@ def createCost(line: str) -> Cost:
     return cost
 
 
-def createProblem(estados: List[State], acoes: List[Action], custos: List[Cost], estadoInicial: str, estadoObjetivo: str) -> Problem:
+def createProblem(states: List[State], actions: List[Action], costs: List[Cost], initialState: str, goalState: str) -> Problem:
+    states.sort(key=lambda o: o.name)
+    actions.sort(key=lambda o: o.name)
+    costs.sort(key=lambda o: (o.action, o.current_state))
 
-    return Problem(estados, acoes, custos, estadoInicial, estadoObjetivo)
+    return Problem(states, actions, costs, initialState, goalState)
 
 
 def parse_file(path: str) -> Problem:
