@@ -1,5 +1,6 @@
 # no bug
 import problem_parser
+import bisect
 EPSILON = 0.1
 
 
@@ -31,9 +32,9 @@ def compute_bellman(state, problem):
     policy_action = ""
     possible_actions = find_actions(state, problem.actions)
     for action in possible_actions:
-        new_value = find_cost(state, action, problem.costs)
+        new_value = problem.find_cost(action.name, state.name)
         for transition in action.transitions:
-            new_value += transition.probability * get_state_value(transition.successor_state, problem.states)
+            new_value += transition.probability * problem.get_state_value(transition.successor_state)
         if new_value < value:
             value = new_value
             policy_action = action.name
@@ -50,16 +51,21 @@ def find_actions(state, action_list):
             possible_actions.append(problem_parser.Action(action.name, possible_transitions))
     return possible_actions
 
+
 # Lockdowned - Num mexe mais, ta limpu
 # ~76% cummulative execution time (including function calls)
 # ~40% internal execution time
 def find_transitions(action,state):
+    '''
     possible_transitions = []
+
     for transition in action.transitions:
         #if is_valid_transition(transition, state):
         if transition.current_state == state.name and \
            (state.name != transition.successor_state or transition.probability != 1.0):
             possible_transitions.append(transition)
+    '''
+    possible_transitions = action.find_transitions(state.name)
     return possible_transitions ##LockD
 
 # 94 million function calls! - ~36% execution time
@@ -120,7 +126,7 @@ def make_grid(states,start,end):
 def smooth_grid(grid):
     max_columns = len(max(grid, key=lambda o: len(o)))
     for line in grid:
-        for missing_column in range(max_columns - 1):
+        for missing_column in range(max_columns - len(line)):
             line.append("")
 
 def prep_list(grid, line, column):
