@@ -1,11 +1,10 @@
 import problem_parser
-import problem as pr
+import value_iteration as vi
+import policy_iteration as pi
 
-import timeit
+problem = problem_parser.parse_file("TestesGrid/RandomGoalInitialState/navigation_2.net")
+# pi.policy_iteration(problem, "TestesGrid/PoliticasFixedRandom/FixedGoalInitialState/navigation_1.net_politicas.json")
 
-problem = problem_parser.parse_file("TestesGrid/FixedGoalInitialState/navigation_4.net")
-#timeit.timeit(pr.value_iteration(problem))
-
-pr.value_iteration(problem)
-grid = pr.make_grid(problem.states,problem.initial_state,problem.goal_state)
-pr.print_output(grid)
+vi.value_iteration(problem)
+grid = vi.make_grid(problem.states,problem.initial_state,problem.goal_state)
+vi.print_output(grid)

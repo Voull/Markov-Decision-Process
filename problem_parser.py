@@ -1,6 +1,7 @@
 #no bugs HAHAHAHAH
 from typing import List
 import bisect
+EPSILON = 0.1
 
 # states = []
 # actions = []
@@ -19,6 +20,7 @@ class Transition:
         return self.current_state < other
     def __gt__(self, other):
         return self.current_state > other
+
 class Action:
     def __init__(self, action_name: str = "", transitions: List[Transition] = None):
         self.name = action_name
@@ -49,7 +51,7 @@ class Cost:
         return self.action + self.current_state < other
 
 class State:
-    def __init__(self, name: str = "", bellman_value: float = 0.0):
+    def __init__(self, name: str = "", bellman_value: float = 1000.0):
         self.name = name
         self.bellman_value = bellman_value
         self.policy_action = ""
@@ -69,13 +71,32 @@ class Problem:
         index = bisect.bisect_left(self.costs, action_name + state_name)
         if index != len(self.costs) and self.costs[index].action + self.costs[index].current_state == action_name + state_name:
             return self.costs[index].value
-        return float("inf")
+        return 0
 
     def get_state_value(self, state_name):
         index = bisect.bisect_left(self.states, state_name)
         if index != len(self.states) and self.states[index].name == state_name:
             return self.states[index].bellman_value
         raise ValueError
+
+    def find_all_actions(self, state_name):
+        possible_actions = []
+        for action in self.actions:
+            possible_transitions = action.find_transitions(state_name)
+            if len(possible_transitions) > 0:
+                possible_actions.append(Action(action.name, possible_transitions))
+        return possible_actions
+
+    def find_action(self, state_name, action_name):
+        for action in self.actions:
+            if action_name in action.name:
+                possible_transitions = action.find_transitions(state_name)
+                if len(possible_transitions) > 0:
+                    return Action(action.name, possible_transitions)
+                return Action(action.name)
+
+        return None
+
 
 def createTransition(line: str) -> Transition:
     line = line.split(" ")
