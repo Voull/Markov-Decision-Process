@@ -1,10 +1,26 @@
-import problem_parser
+import problem_parser as pp
 import value_iteration as vi
 import policy_iteration as pi
+import output as out
+import sys
+import argparse
+import time
 
-problem = problem_parser.parse_file("TestesGrid/RandomGoalInitialState/navigation_2.net")
-# pi.policy_iteration(problem, "TestesGrid/PoliticasFixedRandom/FixedGoalInitialState/navigation_1.net_politicas.json")
+if __name__ == '__main__':
+    optparse = argparse.ArgumentParser(description="Given a problem, finds the optimal policy for all states to a defined Goal.")
+    optparse.add_argument("-p", "--problem", help="Path of the problem file", type=str, required=True)
+    optparse.add_argument("-f", "--policy", dest="policy_path", help="Path of the policy file (Required if type = policy_iteration)", required='2' in sys.argv)
+    optparse.add_argument("-t", "--type", help="Algorithm to be used:\n1 - value_iteration or 2 - policy_iteration", type=int, choices=[1,2], required=True)
 
-vi.value_iteration(problem)
-grid = vi.make_grid(problem.states,problem.initial_state,problem.goal_state)
-vi.print_output(grid)
+    args = optparse.parse_args(sys.argv[1:])
+    problem = pp.parse_file(args.problem)
+
+    num_iterations = 0
+    start = time.time()
+    if args.type == 1:
+        num_iterations = vi.value_iteration(problem)
+    elif args.type == 2:
+        num_iterations = pi.policy_iteration(problem, args.policy_path)
+    end = time.time()
+
+    out.generate_output(problem.states, problem.initial_state, problem.goal_state, end - start, num_iterations)

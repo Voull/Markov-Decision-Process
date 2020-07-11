@@ -1,12 +1,17 @@
 # zero bola
-import problem_parser
+import problem as pr
 import json
 
-def policy_iteration(problem: problem_parser.Problem, archive):
+def policy_iteration(problem: pr.Problem, archive):
     policy_parser(problem,archive)
+    iterations = 0
+
     while True:
+        iterations += 1
         policy_evaluation(problem)
         if not policy_improved(problem): break
+
+    return iterations
 # feito
 def policy_parser(problem,initial_policy_file):
     f = open(initial_policy_file, "r+")
@@ -14,14 +19,14 @@ def policy_parser(problem,initial_policy_file):
     for state in problem.states:
         state.policy_action = dictionary[state.name]
 
-def policy_evaluation(problem: problem_parser.Problem):
+def policy_evaluation(problem: pr.Problem):
     while True:
         residual = 0
         for state in problem.states:
             temp = state.bellman_value
             state.bellman_value = load_bellman(problem, state)
             residual = max(residual, abs(temp - state.bellman_value))
-        if residual < problem_parser.EPSILON: break
+        if residual < pr.EPSILON: break
 
 def load_bellman(problem, state):
     if state.name == problem.goal_state:
