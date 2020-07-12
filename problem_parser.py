@@ -4,11 +4,7 @@ import problem
 
 def createTransition(line: str) -> problem.Transition:
     line = line.split(" ")
-    transition = problem.Transition()
-    transition.current_state = line[0]
-    transition.successor_state = line[1]
-    transition.probability = float(line[2])
-    transition.discard = float(line[3])
+    transition = problem.Transition(line[0], line[1], float(line[2]))
 
     return transition
 

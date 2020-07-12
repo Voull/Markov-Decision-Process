@@ -21,12 +21,14 @@ def compute_bellman(state, problem):
         return 0
     value = float('inf')
     policy_action = ""
-    possible_actions = problem.find_all_actions(state.name)
-    for action in possible_actions:
+    #possible_actions = problem.find_all_actions(state.name)
+    for action in state.actions:
         new_value = 0.0
-        cost = problem.find_cost(action.name, state.name)
+        #cost = problem.find_cost(action.name, state.name)
+        cost = action.cost
         for transition in action.transitions:
-            new_value += transition.probability * (problem.get_state_value(transition.successor_state) + cost)
+            #new_value += transition.probability * (problem.get_state_value(transition.successor_state) + cost)
+            new_value += transition.probability * (problem.states[transition.successor_state].bellman_value + cost)
         if new_value < value:
             value = new_value
             policy_action = action.name

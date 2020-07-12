@@ -31,9 +31,10 @@ def policy_evaluation(problem: pr.Problem):
 def load_bellman(problem, state):
     if state.name == problem.goal_state:
         return 0
-    action = problem.find_action(state.name, state.policy_action)
-    cost = problem.find_cost(action.name, state.name)
-    return compute_bellman(action, problem, cost)
+    #action = problem.find_action(state.name, state.policy_action)
+    action = problem.find_action(state, state.policy_action)
+    #cost = problem.find_cost(action.name, state.name)
+    return compute_bellman(action, problem, action.cost)
 
 def policy_improved(problem):
     policy_changed = False
@@ -45,14 +46,15 @@ def policy_improved(problem):
     return policy_changed
 
 def compute_best_policy(problem, state):
-    possible_actions = problem.find_all_actions(state.name)
+    #possible_actions = problem.find_all_actions(state.name)
+    possible_actions = state.actions
     value = float('inf')
     action_name = ""
     for action in possible_actions:
         if state.name == problem.goal_state:
             continue
-        cost = problem.find_cost(action.name, state.name)
-        new_value = compute_bellman(action,problem,cost)
+        #cost = problem.find_cost(action.name, state.name)
+        new_value = compute_bellman(action,problem,action.cost)
         if new_value < value:
             value = new_value
             action_name = action.name
@@ -62,5 +64,6 @@ def compute_best_policy(problem, state):
 def compute_bellman(action,problem,cost):
     new_value = cost
     for transition in action.transitions:
-        new_value += transition.probability * problem.get_state_value(transition.successor_state)
+        #new_value += transition.probability * problem.get_state_value(transition.successor_state)
+        new_value += transition.probability * problem.states[transition.successor_state].bellman_value
     return new_value

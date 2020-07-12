@@ -4,10 +4,10 @@ import bisect
 EPSILON = 0.1
 
 class Transition:
-    current_state = ""
-    successor_state = ""
-    probability = 0.0
-    discard = 0.0
+    def __init__(self, current_state = "", successor_state = "", probability = 0.0):
+        self.current_state = current_state
+        self.successor_state = successor_state
+        self.probability = probability
 
     def __lt__(self, other):
         return self.current_state < other
@@ -15,9 +15,10 @@ class Transition:
         return self.current_state > other
 
 class Action:
-    def __init__(self, action_name: str = "", transitions: List[Transition] = None):
+    def __init__(self, action_name: str = "", transitions: List[Transition] = None, cost = float("inf")):
         self.name = action_name
         self.transitions = [] if transitions is None else transitions
+        self.cost = cost
 
     def insertTransition(self, transition: Transition) -> None:
         self.transitions.append(transition)
@@ -44,10 +45,11 @@ class Cost:
         return self.action + self.current_state < other
 
 class State:
-    def __init__(self, name: str = "", bellman_value: float = 0.0):
+    def __init__(self, name: str = "", bellman_value: float = 0.0, policy_action: str = ""):
         self.name = name
         self.bellman_value = bellman_value
-        self.policy_action = ""
+        self.policy_action = policy_action
+        self.actions = []
 
     def __lt__(self, other):
         return self.name < other
@@ -59,6 +61,27 @@ class Problem:
         self.costs = [] if costs is None else costs
         self.initial_state = initial_state
         self.goal_state = goal_state
+
+        self.optimize_problem()
+
+    def optimize_problem(self):
+        for state in self.states:
+            state_actions = self.find_all_actions(state.name)
+            for action in state_actions:
+                state_action = Action(action.name)
+                for transition in action.transitions:
+                    if transition.current_state == transition.successor_state and transition.probability == 1.0:
+                        continue
+                    current_state_index = bisect.bisect_left(self.states, transition.current_state)
+                    successor_state_index = bisect.bisect_left(self.states, transition.successor_state)
+                    state_action.insertTransition(Transition(current_state_index, successor_state_index, transition.probability))
+                state_action.cost = self.find_cost(action.name, state.name)
+                if len(state_action.transitions) > 0:
+                    state.actions.append(state_action)
+        del self.actions
+        del self.costs
+
+
 
     def find_cost(self, action_name, state_name):
         index = bisect.bisect_left(self.costs, action_name + state_name)
@@ -80,12 +103,8 @@ class Problem:
                 possible_actions.append(Action(action.name, possible_transitions))
         return possible_actions
 
-    def find_action(self, state_name, action_name):
-        for action in self.actions:
+    def find_action(self, state, action_name):
+        for action in state.actions:
             if action_name in action.name:
-                possible_transitions = action.find_transitions(state_name)
-                if len(possible_transitions) > 0:
-                    return Action(action.name, possible_transitions)
-                return Action(action.name)
-
-        return None
+                return action
+        return Action(action_name)
