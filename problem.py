@@ -44,7 +44,7 @@ class Cost:
         return self.action + self.current_state < other
 
 class State:
-    def __init__(self, name: str = "", bellman_value: float = 1000.0):
+    def __init__(self, name: str = "", bellman_value: float = 0.0):
         self.name = name
         self.bellman_value = bellman_value
         self.policy_action = ""

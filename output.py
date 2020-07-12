@@ -1,7 +1,11 @@
-def generate_output(states, start, end, time_elapsed, num_iterations):
-    grid = make_grid(states, start, end)
+def generate_output(states, start, end, time_elapsed, num_iterations, print_grid, print_policy):
     with open("resultado.txt","w+",encoding = "UTF-8") as file:
-        print_output(file, grid)
+        if print_grid:
+            grid = make_grid(states, start, end)
+            print_output_grid(file, grid)
+        if print_policy:
+            print_output_policy(file, states)
+
         print_statistics(file, time_elapsed, num_iterations)
 
 def make_grid(states,start,end):
@@ -45,7 +49,7 @@ def prep_list(grid, line, column):
     while column >= len(grid[line]):
         grid[line].append("")
 
-def print_output(file, grid):
+def print_output_grid(file, grid):
     for line in grid:
         for column in line:
             if "south" in column:
@@ -74,6 +78,10 @@ def print_output(file, grid):
                 file.write("\u25A0 ") # parede
 
         file.write("\n")
+
+def print_output_policy(file, states):
+    for state in states:
+        file.write("{} \u1405 {} ({:.5f})\n".format(state.name, state.policy_action, state.bellman_value))
 
 def print_statistics(file, time_elapsed, num_iterations):
     file.write("\nExecution Time: {:.2f} ms\n".format(time_elapsed * 1000))

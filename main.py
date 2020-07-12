@@ -11,6 +11,8 @@ if __name__ == '__main__':
     optparse.add_argument("-p", "--problem", help="Path of the problem file", type=str, required=True)
     optparse.add_argument("-f", "--policy", dest="policy_path", help="Path of the policy file (Required if type = policy_iteration)", required='2' in sys.argv)
     optparse.add_argument("-t", "--type", help="Algorithm to be used:\n1 - value_iteration or 2 - policy_iteration", type=int, choices=[1,2], required=True)
+    optparse.add_argument("--show_grid", action="store_true", help="Outputs the policy grid for gridworld problems",  required=False)
+    optparse.add_argument("--show_policy", action="store_true", help="Outputs the policy for general problems",  required=False)
 
     args = optparse.parse_args(sys.argv[1:])
     problem = pp.parse_file(args.problem)
@@ -23,4 +25,4 @@ if __name__ == '__main__':
         num_iterations = pi.policy_iteration(problem, args.policy_path)
     end = time.time()
 
-    out.generate_output(problem.states, problem.initial_state, problem.goal_state, end - start, num_iterations)
+    out.generate_output(problem.states, problem.initial_state, problem.goal_state, end - start, num_iterations, args.show_grid, args.show_policy)
