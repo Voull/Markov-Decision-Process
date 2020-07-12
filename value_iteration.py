@@ -15,45 +15,33 @@ def value_iteration(problem: pr.Problem):
 
     return n
 
-# Returns the Bellman Value of a State
+
 def compute_bellman(state, problem):
     if state.name == problem.goal_state:
         return 0
     value = float('inf')
     policy_action = ""
-    #possible_actions = problem.find_all_actions(state.name)
     for action in state.actions:
         new_value = 0.0
-        #cost = problem.find_cost(action.name, state.name)
         cost = action.cost
         for transition in action.transitions:
-            #new_value += transition.probability * (problem.get_state_value(transition.successor_state) + cost)
             new_value += transition.probability * (problem.states[transition.successor_state].bellman_value + cost)
         if new_value < value:
             value = new_value
             policy_action = action.name
-    # aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa to gotando, di pogama contigu :O:0<3 Eu goto de ver vc fiiz pogamando :3 hihiihihii e eu goto de te ve fiiz fofaaaaa dmssssaaaaaaaaa
     state.policy_action = policy_action
     return value
 
-
-
-
-# Lockdowned - Num mexe mais, ta limpu
-# ~76% cummulative execution time (including function calls)
-# ~40% internal execution time
 def find_transitions(action,state):
 
     possible_transitions = action.find_transitions(state.name)
-    return possible_transitions ##LockD
+    return possible_transitions
 
-# 94 million function calls! - ~36% execution time
-# If removed, there's a ~52% time improvement
+
 def is_valid_transition(transition, state):
     return transition.current_state == state.name and \
            (state.name != transition.successor_state or transition.probability != 1.0)
 
-# A and ¬B or A and ¬C equivale a A and ¬(B or C)
 
 def find_cost(state, action, cost_list) -> float:
     for cost in cost_list:

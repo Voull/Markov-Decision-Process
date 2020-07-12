@@ -81,19 +81,11 @@ class Problem:
         del self.actions
         del self.costs
 
-
-
     def find_cost(self, action_name, state_name):
         index = bisect.bisect_left(self.costs, action_name + state_name)
         if index != len(self.costs) and self.costs[index].action + self.costs[index].current_state == action_name + state_name:
             return self.costs[index].value
         return 0
-
-    def get_state_value(self, state_name):
-        index = bisect.bisect_left(self.states, state_name)
-        if index != len(self.states) and self.states[index].name == state_name:
-            return self.states[index].bellman_value
-        raise ValueError
 
     def find_all_actions(self, state_name):
         possible_actions = []

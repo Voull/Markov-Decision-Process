@@ -80,6 +80,7 @@ def print_output_grid(file, grid):
         file.write("\n")
 
 def print_output_policy(file, states):
+    file.write("\n")
     for state in states:
         file.write("{} \u1405 {} ({:.5f})\n".format(state.name, state.policy_action, state.bellman_value))
 

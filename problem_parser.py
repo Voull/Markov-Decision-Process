@@ -37,7 +37,7 @@ def parse_file(path: str) -> problem.Problem:
         current_block = None
         for line in file:
             line = line.strip()
-            if not line: #if vazia
+            if not line:
                 continue
             elif line.startswith("end"):
                 current_block = None
