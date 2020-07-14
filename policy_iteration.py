@@ -1,6 +1,7 @@
 # zero bola
 import problem as pr
 import json
+import math
 
 def policy_iteration(problem: pr.Problem, archive):
     policy_parser(problem,archive)
@@ -25,7 +26,8 @@ def policy_evaluation(problem: pr.Problem):
         for state in problem.states:
             temp = state.bellman_value
             state.bellman_value = load_bellman(problem, state)
-            residual = max(residual, abs(temp - state.bellman_value))
+            diff = temp - state.bellman_value
+            residual = max(residual, 0  if math.isnan(diff) else abs(diff))
         if residual < pr.EPSILON: break
 
 def load_bellman(problem, state):

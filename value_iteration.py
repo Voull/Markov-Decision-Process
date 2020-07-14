@@ -1,5 +1,6 @@
 # no bug
 import problem as pr
+import math
 
 def value_iteration(problem: pr.Problem):
     n = 0
@@ -59,4 +60,5 @@ def police_iteration():
     pass
 
 def residual(valor_atual, valor_anterior):
-    return abs(valor_atual - valor_anterior)
+    residual_value = valor_atual - valor_anterior
+    return 0 if math.isnan(residual_value) else abs(residual_value)
